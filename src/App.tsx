@@ -1,36 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
-import { buildAutomationRun, buildDashboard, formatCurrency, type AutomationRun } from "./automation";
+import { buildAutomationRun, type AutomationRun } from "./automation";
 import { domainConfig } from "./domain";
 import "./styles.css";
 
 const demoSteps = [
-  { label: "New message", detail: "A new lead comes in from the website, chat, or inbox." },
-  { label: "Quick check", detail: "The app looks for useful signals like urgency, budget, and topic." },
-  { label: "Pick owner", detail: "It suggests the person or queue that should handle the lead." },
-  { label: "Draft reply", detail: "It prepares a note and follow-up that can be reviewed." },
-  { label: "Human review", detail: "Important or risky leads still need a person to approve them." },
-  { label: "Save result", detail: "The final output is ready to send to a CRM or automation tool." }
+  { label: "New message", detail: "Someone asks about your service." },
+  { label: "Quick check", detail: "The app looks for clues like budget, urgency, and topic." },
+  { label: "Pick a person", detail: "It chooses who should handle the message." },
+  { label: "Write draft", detail: "It prepares a note and a reply you can edit." },
+  { label: "You approve", detail: "Nothing is sent until a person checks it." },
+  { label: "Saved", detail: "The approved work is ready for your sales tool." }
 ];
 
 const sampleItems = domainConfig.sampleItems;
 
-const priorityLabel: Record<AutomationRun["priority"], string> = {
-  critical: "Needs review",
-  high: "High priority",
-  medium: "Normal queue",
-  low: "Low priority"
-};
-
 export default function App() {
   const firstRun = useMemo(() => buildAutomationRun(sampleItems[0], domainConfig), []);
-  const dashboard = useMemo(() => buildDashboard(sampleItems, domainConfig), []);
   const [selectedId, setSelectedId] = useState(firstRun.item.id);
   const [activeRun, setActiveRun] = useState<AutomationRun>(firstRun);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [selectedOutput, setSelectedOutput] = useState(firstRun.draftOutputs[1]?.label ?? firstRun.draftOutputs[0]?.label ?? "");
 
   useEffect(() => {
     if (!playing) return;
@@ -40,10 +31,6 @@ export default function App() {
 
     return () => window.clearInterval(timer);
   }, [playing]);
-
-  useEffect(() => {
-    setSelectedOutput(activeRun.draftOutputs[1]?.label ?? activeRun.draftOutputs[0]?.label ?? "");
-  }, [activeRun]);
 
   const chooseMessage = (itemId: string) => {
     const item = sampleItems.find((candidate) => candidate.id === itemId);
@@ -89,103 +76,64 @@ export default function App() {
     }
   };
 
-  const selectedDraft =
-    activeRun.draftOutputs.find((draft) => draft.label === selectedOutput)?.content ?? activeRun.draftOutputs[0]?.content ?? "";
-  const statusText = saved ? "Saved to mock CRM payload" : priorityLabel[activeRun.priority];
-  const scoreTone = activeRun.priority === "critical" ? "critical" : activeRun.priority === "high" ? "high" : "normal";
+  const followUpDraft = activeRun.draftOutputs.find((draft) => draft.label === "Follow-up email")?.content ?? "";
+  const statusText = saved ? "Saved for follow-up" : activeRun.priority === "critical" ? "Needs a person to review" : "Ready to review";
 
   return (
-    <main className="app-shell" style={{ "--accent": domainConfig.accent } as React.CSSProperties}>
-      <section className="hero">
+    <main className="simple-shell" style={{ "--accent": domainConfig.accent } as React.CSSProperties}>
+      <section className="hero-panel">
         <div className="hero-copy">
-          <p className="eyebrow">Lead triage demo</p>
-          <h1>Review a lead, suggest the owner, and draft the follow-up in one place.</h1>
-          <p className="hero-text">
-            This page is built to feel like a practical internal tool. Pick a sample lead, run the check,
-            review the output, and save the result when it looks right.
+          <p className="eyebrow">Simple lead triage demo</p>
+          <h1>Turn a new customer message into a ready-to-send reply.</h1>
+          <p>
+            This demo shows one useful job: read an incoming message, decide who should handle it,
+            and draft the follow-up so the team can respond faster.
           </p>
-          <div className="hero-actions">
-            <button className="primary" disabled={busy} onClick={runCheck}>
-              {busy ? "Checking..." : "Run the demo"}
-            </button>
-            <button onClick={() => setPlaying((current) => !current)}>
-              {playing ? "Pause flow" : "Play flow"}
-            </button>
-          </div>
         </div>
-
-        <div className="hero-stats">
-          {dashboard.kpis.slice(0, 4).map((kpi) => (
-            <article className="stat-card" key={kpi.label}>
-              <span>{kpi.label}</span>
-              <strong>{kpi.label === "Value in queue" ? formatCurrency(Number(activeRun.item.value + sampleItems[1].value + sampleItems[2].value)) : kpi.value}</strong>
-              <small>{kpi.helper}</small>
-            </article>
-          ))}
+        <div className="hero-actions">
+          <button className="primary" disabled={busy} onClick={runCheck}>
+            {busy ? "Checking..." : "Run the demo"}
+          </button>
+          <button onClick={() => setPlaying((current) => !current)}>
+            {playing ? "Pause" : "Play"}
+          </button>
         </div>
       </section>
 
-      <section className="workspace">
-        <aside className="panel inbox-panel">
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">Inbox</p>
-              <h2>Sample leads</h2>
-            </div>
-            <span className="mini-badge">{sampleItems.length} items</span>
+      <section className="demo-card" aria-label="Animated customer message demo">
+        <div className="message-list">
+          <div className="section-head">
+            <p className="eyebrow">Try a message</p>
+            <span>{sampleItems.length} samples</span>
+          </div>
+          {sampleItems.map((item) => (
+            <button
+              className={item.id === selectedId ? "message-button active" : "message-button"}
+              key={item.id}
+              onClick={() => chooseMessage(item.id)}
+            >
+              <strong>{item.customer}</strong>
+              <span>{item.title}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="animation-area">
+          <div className="step-track" aria-hidden="true">
+            {demoSteps.map((demoStep, index) => (
+              <span className={index <= step ? "step-dot active" : "step-dot"} key={demoStep.label} />
+            ))}
           </div>
 
-          <div className="message-list">
-            {sampleItems.map((item) => {
-              const run = buildAutomationRun(item, domainConfig);
-              return (
-                <button
-                  className={item.id === selectedId ? "message-button active" : "message-button"}
-                  key={item.id}
-                  onClick={() => chooseMessage(item.id)}
-                >
-                  <div className="message-topline">
-                    <strong>{item.customer}</strong>
-                    <span className={`pill ${run.priority}`}>{run.priority}</span>
-                  </div>
-                  <span>{item.title}</span>
-                  <small>{item.source} · {formatCurrency(item.value)}</small>
-                </button>
-              );
-            })}
-          </div>
-        </aside>
-
-        <section className="panel flow-panel" aria-label="Lead routing flow">
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">Workflow</p>
-              <h2>How this lead moves</h2>
-            </div>
-            <span className="mini-badge">{demoSteps[step].label}</span>
+          <div className={`floating-message step-${step}`}>
+            <span>{activeRun.item.source}</span>
+            <strong>{activeRun.item.customer}</strong>
+            <small>{activeRun.item.description}</small>
           </div>
 
-          <div className="flow-stage">
-            <div className="lead-card">
-              <span>{activeRun.item.source}</span>
-              <strong>{activeRun.item.customer}</strong>
-              <p>{activeRun.item.description}</p>
-              <div className="lead-tags">
-                {activeRun.item.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-            </div>
-
-            <div className="flow-copy">
-              <div className="step-track" aria-hidden="true">
-                {demoSteps.map((demoStep, index) => (
-                  <span className={index <= step ? "step-dot active" : "step-dot"} key={demoStep.label} />
-                ))}
-              </div>
-              <h3>{demoSteps[step].label}</h3>
-              <p>{demoSteps[step].detail}</p>
-            </div>
+          <div className="step-copy">
+            <span>{demoSteps[step].label}</span>
+            <h2>{demoSteps[step].detail}</h2>
           </div>
 
           <div className="step-buttons">
@@ -202,103 +150,37 @@ export default function App() {
               </button>
             ))}
           </div>
-        </section>
+        </div>
 
-        <aside className="panel summary-panel">
-          <div className="panel-head">
+        <aside className="result-panel">
+          <div className="panel-badge">{activeRun.priority}</div>
+          <dl>
             <div>
-              <p className="eyebrow">Decision</p>
-              <h2>Current result</h2>
+              <dt>Suggested owner</dt>
+              <dd>{activeRun.route}</dd>
             </div>
-            <span className={`score-chip ${scoreTone}`}>{activeRun.score}/100</span>
-          </div>
-
-          <div className="summary-grid">
-            <article>
-              <span>Suggested owner</span>
-              <strong>{activeRun.route}</strong>
-            </article>
-            <article>
-              <span>Status</span>
-              <strong>{statusText}</strong>
-            </article>
-            <article>
-              <span>Confidence</span>
-              <strong>{activeRun.confidence}%</strong>
-            </article>
-            <article>
-              <span>Category</span>
-              <strong>{activeRun.category}</strong>
-            </article>
-          </div>
-
-          <div className="summary-block">
-            <h3>Why it landed here</h3>
-            <div className="token-list">
-              {activeRun.matchedKeywords.map((keyword) => (
-                <span key={keyword}>{keyword}</span>
-              ))}
+            <div>
+              <dt>Status</dt>
+              <dd>{statusText}</dd>
             </div>
-          </div>
-
-          <div className="summary-block">
-            <h3>Next actions</h3>
-            <ul className="plain-list">
-              {activeRun.nextBestActions.map((action) => (
-                <li key={action}>{action}</li>
-              ))}
-            </ul>
-          </div>
+            <div>
+              <dt>Category</dt>
+              <dd>{activeRun.category}</dd>
+            </div>
+          </dl>
         </aside>
       </section>
 
-      <section className="lower-grid">
-        <section className="panel outputs-panel">
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">Outputs</p>
-              <h2>What the app prepares</h2>
-            </div>
-            <button className="primary" disabled={busy} onClick={saveWork}>
-              {saved ? "Saved" : "Approve and save"}
-            </button>
-          </div>
-
-          <div className="output-tabs">
-            {activeRun.draftOutputs.map((draft) => (
-              <button
-                className={draft.label === selectedOutput ? "output-tab active" : "output-tab"}
-                key={draft.label}
-                onClick={() => setSelectedOutput(draft.label)}
-              >
-                {draft.label}
-              </button>
-            ))}
-          </div>
-
-          <pre>{selectedDraft}</pre>
-        </section>
-
-        <section className="panel timeline-panel">
-          <div className="panel-head">
-            <div>
-              <p className="eyebrow">Timeline</p>
-              <h2>Run history</h2>
-            </div>
-          </div>
-
-          <div className="timeline-list">
-            {activeRun.timeline.map((entry) => (
-              <article className="timeline-item" key={`${entry.at}-${entry.event}`}>
-                <span>{entry.at}</span>
-                <div>
-                  <strong>{entry.event}</strong>
-                  <p>{entry.detail}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+      <section className="draft-card">
+        <div className="draft-intro">
+          <p className="eyebrow">Draft reply</p>
+          <h2>What the app prepares</h2>
+          <p>The operator can review this before anything is saved.</p>
+        </div>
+        <pre>{followUpDraft}</pre>
+        <button className="primary" disabled={busy} onClick={saveWork}>
+          {saved ? "Saved" : "Approve and save"}
+        </button>
       </section>
     </main>
   );
