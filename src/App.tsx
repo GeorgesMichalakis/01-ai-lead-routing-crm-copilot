@@ -19,7 +19,7 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(firstRun.item.id);
   const [activeRun, setActiveRun] = useState<AutomationRun>(firstRun);
   const [step, setStep] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -39,7 +39,7 @@ export default function App() {
     setActiveRun(buildAutomationRun(item, domainConfig));
     setStep(0);
     setSaved(false);
-    setPlaying(true);
+    setPlaying(false);
   };
 
   const runCheck = async () => {
@@ -95,7 +95,7 @@ export default function App() {
             {busy ? "Checking..." : "Run the demo"}
           </button>
           <button onClick={() => setPlaying((current) => !current)}>
-            {playing ? "Pause" : "Play"}
+            {playing ? "Pause" : "Start"}
           </button>
         </div>
       </section>
