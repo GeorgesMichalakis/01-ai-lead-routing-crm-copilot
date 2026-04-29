@@ -150,11 +150,10 @@ button:disabled {
 }
 
 .animation-area {
-  position: relative;
   overflow: hidden;
   min-height: 360px;
   display: grid;
-  align-content: space-between;
+  grid-template-rows: auto minmax(160px, 1fr) auto auto;
   gap: 18px;
   padding: 22px;
   border-radius: 16px;
@@ -203,10 +202,8 @@ button:disabled {
 }
 
 .floating-message {
-  position: absolute;
-  top: 92px;
-  left: 22px;
-  width: min(310px, calc(100% - 44px));
+  position: relative;
+  width: min(310px, 100%);
   min-height: 145px;
   display: grid;
   align-content: center;
@@ -216,7 +213,7 @@ button:disabled {
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16);
-  transition: left 620ms cubic-bezier(.2, .8, .2, 1);
+  transition: transform 620ms cubic-bezier(.2, .8, .2, 1);
 }
 
 .floating-message::after {
@@ -228,12 +225,12 @@ button:disabled {
   animation: pulse-ring 1.8s ease-out infinite;
 }
 
-.floating-message.step-0 { left: 22px; }
-.floating-message.step-1 { left: 12%; }
-.floating-message.step-2 { left: 24%; }
-.floating-message.step-3 { left: 36%; }
-.floating-message.step-4 { left: 48%; }
-.floating-message.step-5 { left: calc(100% - 332px); }
+.floating-message.step-0 { transform: translateX(0%); }
+.floating-message.step-1 { transform: translateX(12%); }
+.floating-message.step-2 { transform: translateX(24%); }
+.floating-message.step-3 { transform: translateX(36%); }
+.floating-message.step-4 { transform: translateX(48%); }
+.floating-message.step-5 { transform: translateX(64%); }
 
 .floating-message span {
   color: #64748b;
@@ -253,8 +250,7 @@ button:disabled {
 }
 
 .step-copy {
-  max-width: 320px;
-  align-self: end;
+  max-width: 420px;
 }
 
 .step-copy h2 {
@@ -424,10 +420,8 @@ pre {
   .floating-message.step-3,
   .floating-message.step-4,
   .floating-message.step-5 {
-    position: relative;
-    top: auto;
-    left: auto;
     width: 100%;
+    transform: none;
   }
 
   .step-copy {
