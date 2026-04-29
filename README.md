@@ -1,46 +1,41 @@
 # AI Lead Routing CRM Copilot
 
-Scores inbound leads, routes them to the right owner, writes CRM notes, and drafts follow-up.
+A small demo app that reviews incoming leads, chooses who should handle them, drafts a reply, and prepares a mock CRM update.
 
-## Client Value
+## What This Repo Does
 
-Reply to qualified leads in under 5 minutes and keep CRM records clean.
+This project is a portfolio demo built with React and Express.
 
-This is a deployable portfolio demo for B2B founders, agencies, and sales teams. It shows a complete AI automation workflow: intake, deterministic scoring, AI-assisted drafting, human approval, and mock publishing to common business systems.
+You pick one of the sample leads in the UI, click a button, and the app:
 
-## Before / What We Provide / After
+- scores the lead with simple rules
+- chooses a route such as `Enterprise AE` or `Founder inbox`
+- drafts a follow-up email and CRM note
+- requires human review for riskier cases
+- returns a mock payload showing what could be sent to tools like HubSpot or Salesforce
 
-### Before
+By default, everything works without an API key. If `OPENAI_API_KEY` is set, the server can also ask OpenAI to improve the draft outputs.
 
-- Leads arrive from HubSpot, Salesforce, Zapier and are reviewed one by one.
-- The team copies details between tools, decides priority manually, and writes repetitive notes or replies from scratch.
-- High-value or risky leads can sit in the same queue as low-value work, so follow-up quality depends on who notices first.
+See [BEFORE_AFTER_DEMO.md](./BEFORE_AFTER_DEMO.md) for a short demo script in plain English.
 
-### What We Provide
+## Why It Exists
 
-- A deployable React and Express workflow app tailored to B2B founders, agencies, and sales teams.
-- An AI scoring and routing engine for leads, with deterministic fallback mode and optional live OpenAI Responses API review.
-- Human-in-loop approval screens, generated drafts, audit-friendly timeline, and mock adapters for HubSpot, Salesforce, Zapier, Make, n8n, Google Sheets.
-- Production-ready handoff assets: Dockerfile, Render config, environment template, tests, and integration payload examples.
+This is useful as:
 
-### After
-
-- Leads are classified, scored, routed to Enterprise AE, and prepared for review in seconds.
-- The operator receives draft outputs, next-best actions, and integration payloads before anything is sent externally.
-- Approved work is pushed to HubSpot and Salesforce, keeping the source workflow and downstream records aligned.
-
-See [BEFORE_AFTER_DEMO.md](./BEFORE_AFTER_DEMO.md) for a client-ready walkthrough script.
+- a portfolio piece
+- a starter template for a real lead-routing workflow
+- a simple demo for showing clients how an approval-based AI flow could work before connecting real systems
 
 ## Demo Features
 
-- React operations dashboard for leads
-- Express API with health, analysis, and publish endpoints
-- OpenAI Responses API integration when `OPENAI_API_KEY` is configured
-- Deterministic fallback mode so the demo works without paid API access
-- Mock adapters for HubSpot, Salesforce, Zapier, Make, n8n, Google Sheets
-- Human-in-loop review controls for risky or high-priority items
-- Vitest coverage for classification, scoring, and publish payload behavior
-- Dockerfile and Render deploy configuration
+- React front end with sample leads and a simple animated flow
+- Express API with `health`, `analyze`, and `publish` endpoints
+- Rule-based scoring and routing
+- Optional OpenAI draft improvement
+- Mock integrations for HubSpot, Salesforce, Zapier, Make, `n8n`, and Google Sheets
+- Human approval step for critical or risky leads
+- Tests for scoring, dashboard data, and mock publish behavior
+- Dockerfile and Render config for deployment
 
 ## Local Setup
 
@@ -67,7 +62,7 @@ export OPENAI_API_KEY="your_api_key"
 export OPENAI_MODEL="gpt-5.2"
 ```
 
-Without an API key, the app uses a deterministic demo engine so clients can still click through the workflow.
+Without an API key, the app stays in rule-based demo mode.
 
 ## Deployment
 
@@ -79,7 +74,3 @@ Docker:
 docker build -t 01-ai-lead-routing-crm-copilot .
 docker run -p 8787:8787 --env-file .env 01-ai-lead-routing-crm-copilot
 ```
-
-## Upwork Pitch
-
-I can adapt this demo to your real stack by replacing the mock adapters with your CRM, inbox, spreadsheet, calendar, support desk, or ecommerce API. The build can start as a focused workflow automation and grow into a full internal tool.

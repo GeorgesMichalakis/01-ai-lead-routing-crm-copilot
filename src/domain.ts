@@ -3,14 +3,14 @@ import type { DomainConfig } from "./automation";
 export const domainConfig: DomainConfig = {
   "slug": "01-ai-lead-routing-crm-copilot",
   "title": "AI Lead Routing CRM Copilot",
-  "tagline": "Scores inbound leads, routes them to the right owner, writes CRM notes, and drafts follow-up.",
-  "workflow": "Lead routing and CRM follow-up",
+  "tagline": "Reviews incoming leads, suggests an owner, drafts a reply, and prepares a CRM note.",
+  "workflow": "Lead review and follow-up",
   "audience": "B2B founders, agencies, and sales teams",
   "itemNoun": "lead",
   "itemPlural": "leads",
   "primaryAction": "Route lead",
   "accent": "#2563eb",
-  "businessGoal": "Reply to qualified leads in under 5 minutes and keep CRM records clean.",
+  "businessGoal": "Help the team respond faster without skipping human review.",
   "integrations": [
     "HubSpot",
     "Salesforce",
@@ -148,37 +148,37 @@ export const domainConfig: DomainConfig = {
   "demo": {
     "beforeTitle": "Manual lead routing and CRM follow-up",
     "beforeState": [
-      "Leads arrive from HubSpot, Salesforce, Zapier and are reviewed one by one.",
-      "The team copies details between tools, decides priority manually, and writes repetitive notes or replies from scratch.",
-      "High-value or risky leads can sit in the same queue as low-value work, so follow-up quality depends on who notices first."
+      "Leads arrive from different places and someone has to check them one by one.",
+      "The team copies details between tools, decides priority manually, and writes the same notes and replies over and over.",
+      "Important leads can wait too long when everything lands in the same queue."
     ],
     "whatWeProvide": [
-      "A deployable React and Express workflow app tailored to B2B founders, agencies, and sales teams.",
-      "An AI scoring and routing engine for leads, with deterministic fallback mode and optional live OpenAI Responses API review.",
-      "Human-in-loop approval screens, generated drafts, audit-friendly timeline, and mock adapters for HubSpot, Salesforce, Zapier, Make, n8n, Google Sheets.",
-      "Production-ready handoff assets: Dockerfile, Render config, environment template, tests, and integration payload examples."
+      "A React and Express app that runs the lead-review flow end to end.",
+      "Rule-based scoring and routing, with optional OpenAI help for better drafts.",
+      "A person still reviews risky items before anything is saved or sent.",
+      "Mock CRM payloads, tests, and deploy files are included."
     ],
     "afterTitle": "Automated lead routing and CRM follow-up",
     "afterState": [
-      "Leads are classified, scored, routed to Enterprise AE, and prepared for review in seconds.",
-      "The operator receives draft outputs, next-best actions, and integration payloads before anything is sent externally.",
-      "Approved work is pushed to HubSpot and Salesforce, keeping the source workflow and downstream records aligned."
+      "Each lead gets a quick first pass automatically.",
+      "The app suggests the owner and writes the first draft.",
+      "A person can review the result before it goes to a CRM or other tool."
     ],
     "demoFlow": [
-      "Open the dashboard and show the client the incoming leads queue.",
-      "Select the highest-value sample lead and explain the before state: manual review, copy/paste, and slow routing.",
-      "Click \"Route lead\" to run deterministic AI automation, or enable live OpenAI review if an API key is configured.",
-      "Review the score, route, confidence, timeline, and generated outputs with the client.",
-      "Click a mock integration button to show exactly what would be sent to HubSpot, Zapier, Make, n8n, or the client tool stack.",
-      "Close with the after state: faster response time, cleaner records, and a human approval lane for sensitive work."
+      "Open the dashboard and show the sample leads.",
+      "Pick one lead and explain that this step is often handled manually.",
+      "Click \"Run the demo\" to score it and draft the outputs.",
+      "Review the suggested owner, status, and reply draft.",
+      "Save the result to show the mock CRM handoff.",
+      "Explain that the same flow can later connect to a real CRM."
     ],
     "successMetrics": [
-      "Manual review steps reduced",
-      "Average response time improved",
-      "High-priority items routed faster",
-      "Records updated consistently",
-      "Human approval preserved for risky cases"
+      "Less manual triage",
+      "Faster first response",
+      "Important leads handled sooner",
+      "Cleaner records",
+      "Human approval kept for risky cases"
     ],
-    "clientOffer": "I will replace the demo data and mock adapters with your real HubSpot, Salesforce, Zapier setup, connect the API credentials, tune the routing rules, and deploy the workflow for your team."
+    "clientOffer": "I can swap the sample data and mock payloads for your real CRM, inbox, and routing rules."
   }
 };
